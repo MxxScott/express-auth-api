@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="A simple blog powered by an Express and MongoDB API">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="stylesheet" href="/css/styles.css">
     <title>Field Notes | Blog</title>
     <style>
         :root {
@@ -28,7 +29,7 @@
             margin: 0;
             color: var(--ink);
             background: var(--paper);
-            font-family: Arial, Helvetica, sans-serif;
+            font-family: Manrope, Arial, sans-serif;
             line-height: 1.5;
         }
 
@@ -419,7 +420,13 @@
     <header>
         <nav class="nav" aria-label="Main navigation">
             <a class="brand" href="/">Field<span>Notes</span></a>
-            <span class="nav-note">A small corner for considered thoughts</span>
+            <div class="blog-nav">
+                <a href="/">Home</a>
+                <a href="/profile" data-auth="in">Profile</a>
+                <a href="/admin" data-auth="admin">Admin</a>
+                <button type="button" data-auth="in" data-logout>Sign out</button>
+                <a href="/login" data-auth="out">Sign in</a>
+            </div>
         </nav>
     </header>
 
@@ -487,7 +494,9 @@
 
     <footer>Made by David Lawal</footer>
 
+    <script src="/js/auth.js"></script>
     <script>
+        renderNav()
         const form = document.querySelector('#post-form')
         const postsElement = document.querySelector('#posts')
         const postCount = document.querySelector('#post-count')
@@ -637,7 +646,8 @@
 
             try {
                 const response = await fetch(`/api/blog/${encodeURIComponent(post._id)}`, {
-                    method: 'DELETE'
+                    method: 'DELETE',
+                    headers: { Authorization: `Bearer ${session.getToken()}` }
                 })
                 const data = await response.json()
 
@@ -685,7 +695,10 @@
             try {
                 const response = await fetch(url, {
                     method,
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${session.getToken()}`
+                    },
                     body: JSON.stringify(payload)
                 })
                 const data = await response.json()

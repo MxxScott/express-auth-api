@@ -1,4 +1,8 @@
 const Post = require('../models/blogModel')
+const mongoose = require('mongoose')
+const cloudinary = require('../config/cloudinary')
+
+const isValidId = (id) => mongoose.Types.ObjectId.isValid(id)
 
 const createPost = async (req, res) => {
     try {

@@ -29,7 +29,8 @@ plain HTML/CSS/JS frontend served by the same Express server.
 - Reusable middleware: `auth`, `adminAuth`, `roleAuth(...roles)`
 - Full admin API: list, search, filter, create, promote/demote, delete users
 - Self service: view your own profile, delete your own account
-- Frontend: home page with inline login/register, profile page, admin panel
+- Frontend: home page with inline login/register, profile page, authenticated Field Notes journal, and admin panel
+- Signed-in navigation exposes the full workspace, including the journal
 - Password hashes are never returned by any endpoint
 
 ---
@@ -116,6 +117,7 @@ PORT=8080
 | `/`        | Home. Shows login/register inline when signed out, a welcome card + data fetcher when signed in |
 | `/login`   | Standalone login/register page |
 | `/profile` | Your account details, refresh, logout, delete account |
+| `/blog`    | Authenticated Field Notes journal: read posts, publish, edit, and delete |
 | `/admin`   | Admin panel: stats, search, filter, promote/demote, delete (admins only) |
 
 The nav adapts to your session using `data-auth="in" | "out" | "admin"` attributes.
@@ -153,10 +155,24 @@ Base URL: `http://localhost:8080`
 | `PATCH`  | `/admin/users/:id/role`   | `{ role: "admin" \| "user" }` | Promote or demote |
 | `DELETE` | `/admin/users/:id`        | – | Delete a user |
 
+### Journal (`/api/blog`)
+
+| Method | Endpoint | Authentication | Description |
+|--------|----------|----------------|-------------|
+| `GET` | `/api/blog` | Public | List posts, newest first |
+| `GET` | `/api/blog/:id` | Public | Read one post |
+| `POST` | `/api/blog` | Required | Publish a post |
+| `PATCH` | `/api/blog/:id` | Required | Edit a post |
+| `DELETE` | `/api/blog/:id` | Required | Delete a post |
+
+The `/blog` page is linked from the signed-in navigation. Write actions send the
+current JWT in the `Authorization: Bearer <token>` header; users must be signed in
+to publish, edit, or delete journal entries.
+
 ### Status codes
 
 | Code | Meaning |
-|------|---------|
+| ------ | --------- |
 | `200` | OK |
 | `201` | Created |
 | `400` | Validation failed, duplicate email, bad id, invalid role |
@@ -209,6 +225,7 @@ Response:
 ```
 
 Notes:
+
 - `role` must be lowercase `"user"` or `"admin"` (the enum is case sensitive)
 - omit `role` and it defaults to `"user"`
 - emails are lowercased, so `Jane@x.com` and `jane@x.com` are the same account
@@ -250,7 +267,7 @@ DELETE http://localhost:8080/admin/users/<id>
 ### 5. Troubleshooting
 
 | Symptom | Cause |
-|---------|-------|
+| --------- | ------- |
 | `401 No token, authorization denied` | Missing `Authorization` header |
 | `401 Token is not valid` | Token expired (1h) or wrong `JWT_SECRET` — log in again |
 | `403 Access denied, admin only` | Your token belongs to a `user`, not an `admin` |
