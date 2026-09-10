@@ -29,4 +29,4 @@ const favicon = (req, res) => {
     sendPage(res, 'favicon.svg')
 }
 
-module.exports = { home, login, profile, admin, blog, favicon }
+module.exports = { home, login, profile, admin, blog, favicon, sendPage }
