@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A simple blog powered by an Express and MongoDB API">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <title>Field Notes | Blog</title>
+    <style>
+        :root {
+            --ink: #172126;
+            --muted: #667278;
+            --paper: #f7f7f3;
+            --surface: #ffffff;
+            --line: #d9dfdc;
+            --accent: #c95035;
+            --accent-dark: #963724;
+            --soft-accent: #f5e2dc;
+            --shadow: 0 12px 30px rgba(23, 33, 38, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            color: var(--ink);
+            background: var(--paper);
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1.5;
+        }
+
+        header {
+            border-bottom: 1px solid var(--line);
+            background: var(--surface);
+        }
+
+        .nav,
+        main,
+        footer {
+            width: min(1120px, calc(100% - 40px));
+            margin: 0 auto;
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 72px;
+            gap: 20px;
+        }
+
+        .brand {
+            color: var(--ink);
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 1.45rem;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .brand span {
+            color: var(--accent);
+        }
+
+        .nav-note {
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        main {
+            padding: 54px 0 72px;
+        }
+
+        .intro {
+            display: grid;
+            grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.7fr);
+            gap: 48px;
+            align-items: end;
+            margin-bottom: 42px;
+        }
+
+        .eyebrow {
+            margin: 0 0 10px;
+            color: var(--accent-dark);
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-family: Georgia, "Times New Roman", serif;
+            line-height: 1.1;
+        }
+
+        h1 {
+            max-width: 680px;
+            margin: 0;
+            font-size: clamp(2.6rem, 6vw, 5.4rem);
+            letter-spacing: 0;
+        }
+
+        .intro-copy {
+            margin: 0;
+            color: var(--muted);
+            font-size: 1.05rem;
+        }
+
+        .workspace {
+            display: grid;
+            grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.6fr);
+            gap: 28px;
+            align-items: start;
+        }
+
+        .section-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .section-heading h2 {
+            margin: 0;
+            font-size: 1.65rem;
+        }
+
+        .count {
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .posts {
+            display: grid;
+            gap: 14px;
+        }
+
+        .post-card,
+        .composer {
+            border: 1px solid var(--line);
+            background: var(--surface);
+            box-shadow: var(--shadow);
+        }
+
+        .post-card {
+            display: grid;
+            grid-template-columns: 150px minmax(0, 1fr);
+            min-height: 180px;
+        }
+
+        .post-image {
+            width: 100%;
+            height: 100%;
+            min-height: 180px;
+            object-fit: cover;
+            background: var(--soft-accent);
+        }
+
+        .post-content {
+            padding: 22px 24px;
+        }
+
+        .post-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 14px;
+            margin-bottom: 8px;
+            color: var(--muted);
+            font-size: 0.8rem;
+        }
+
+        .category {
+            color: var(--accent-dark);
+            font-weight: 700;
+        }
+
+        .post-card h3 {
+            margin: 0 0 8px;
+            font-size: 1.5rem;
+        }
+
+        .post-card p {
+            display: -webkit-box;
+            overflow: hidden;
+            margin: 0;
+            color: var(--muted);
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 14px;
+        }
+
+        .tag {
+            padding: 3px 8px;
+            color: var(--accent-dark);
+            background: var(--soft-accent);
+            font-size: 0.75rem;
+        }
+
+        .post-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 18px;
+            padding-top: 14px;
+            border-top: 1px solid var(--line);
+        }
+
+        .post-actions button {
+            width: auto;
+            padding: 7px 11px;
+            font-size: 0.82rem;
+        }
+
+        .edit-button {
+            color: var(--accent-dark);
+            background: transparent;
+        }
+
+        .edit-button:hover {
+            color: #ffffff;
+        }
+
+        .delete-button {
+            color: var(--ink);
+            border-color: var(--line);
+            background: transparent;
+        }
+
+        .delete-button:hover {
+            color: #ffffff;
+            border-color: var(--accent-dark);
+        }
+
+        .composer {
+            position: sticky;
+            top: 20px;
+            padding: 24px;
+        }
+
+        .composer h2 {
+            margin: 0 0 6px;
+            font-size: 1.65rem;
+        }
+
+        .composer-intro {
+            margin: 0 0 20px;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .field {
+            display: grid;
+            gap: 6px;
+            margin-bottom: 14px;
+        }
+
+        label {
+            font-size: 0.82rem;
+            font-weight: 700;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            border: 1px solid var(--line);
+            border-radius: 0;
+            padding: 11px 12px;
+            color: var(--ink);
+            background: #fcfcfa;
+            font: inherit;
+        }
+
+        textarea {
+            min-height: 130px;
+            resize: vertical;
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: 2px solid var(--soft-accent);
+            border-color: var(--accent);
+        }
+
+        button {
+            width: 100%;
+            border: 1px solid var(--accent);
+            border-radius: 0;
+            padding: 12px 16px;
+            color: #ffffff;
+            background: var(--accent);
+            cursor: pointer;
+            font: inherit;
+            font-weight: 700;
+        }
+
+        button:hover {
+            background: var(--accent-dark);
+        }
+
+        button:disabled {
+            cursor: wait;
+            opacity: 0.65;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .form-actions button {
+            width: auto;
+            flex: 1;
+        }
+
+        .cancel-button {
+            color: var(--ink);
+            border-color: var(--line);
+            background: transparent;
+        }
+
+        .cancel-button:hover {
+            color: #ffffff;
+            border-color: var(--ink);
+            background: var(--ink);
+        }
+
+        .refresh {
+            width: auto;
+            padding: 7px 11px;
+            color: var(--accent-dark);
+            background: transparent;
+            font-size: 0.82rem;
+        }
+
+        .refresh:hover {
+            color: #ffffff;
+        }
+
+        .status {
+            min-height: 24px;
+            margin: 12px 0 0;
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+
+        .status.error {
+            color: var(--accent-dark);
+        }
+
+        .empty {
+            border: 1px dashed var(--line);
+            padding: 36px 24px;
+            color: var(--muted);
+            text-align: center;
+        }
+
+        footer {
+            border-top: 1px solid var(--line);
+            padding: 18px 0 28px;
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 760px) {
+
+            .nav,
+            main,
+            footer {
+                width: min(100% - 28px, 620px);
+            }
+
+            .nav-note {
+                display: none;
+            }
+
+            main {
+                padding-top: 36px;
+            }
+
+            .intro,
+            .workspace {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .intro {
+                margin-bottom: 28px;
+            }
+
+            .composer {
+                position: static;
+                grid-row: 1;
+            }
+
+            .post-card {
+                grid-template-columns: 1fr;
+            }
+
+            .post-image {
+                height: 170px;
+                min-height: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav class="nav" aria-label="Main navigation">
+            <a class="brand" href="/">Field<span>Notes</span></a>
+            <span class="nav-note">A small corner for considered thoughts</span>
+        </nav>
+    </header>
+
+    <main>
+        <section class="intro" aria-labelledby="page-title">
+            <div>
+                <p class="eyebrow">The latest entries</p>
+                <h1 id="page-title">Ideas worth<br>coming back to.</h1>
+            </div>
+            <p class="intro-copy">A simple collection of stories, observations, and useful things learned along the way.
+            </p>
+        </section>
+
+        <div class="workspace">
+            <section aria-labelledby="posts-title">
+                <div class="section-heading">
+                    <h2 id="posts-title">Recent posts</h2>
+                    <div>
+                        <span class="count" id="post-count">Loading...</span>
+                        <button class="refresh" id="refresh-button" type="button">Refresh</button>
+                    </div>
+                </div>
+                <p class="status" id="list-status" role="status"></p>
+                <div class="posts" id="posts" aria-live="polite"></div>
+            </section>
+
+            <aside class="composer" aria-labelledby="composer-title">
+                <h2 id="composer-title">Write a post</h2>
+                <p class="composer-intro">Share something useful, personal, or worth remembering.</p>
+                <form id="post-form">
+                    <div class="field">
+                        <label for="title">Title</label>
+                        <input id="title" name="title" type="text" required maxlength="120">
+                    </div>
+                    <div class="field">
+                        <label for="author">Author</label>
+                        <input id="author" name="author" type="text" required maxlength="80">
+                    </div>
+                    <div class="field">
+                        <label for="category">Category</label>
+                        <input id="category" name="category" type="text" maxlength="50" placeholder="e.g. Learning">
+                    </div>
+                    <div class="field">
+                        <label for="image">Image URL <span>(optional)</span></label>
+                        <input type="file" name="image" id="img_upload">
+                        <input id="image" name="image" type="url" placeholder="https://example.com/photo.jpg">
+                    </div>
+                    <div class="field">
+                        <label for="tags">Tags <span>(comma separated)</span></label>
+                        <input id="tags" name="tags" type="text" placeholder="backend, notes">
+                    </div>
+                    <div class="field">
+                        <label for="content">Content</label>
+                        <textarea id="content" name="content" required></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button id="submit-button" type="submit">Publish post</button>
+                        <button class="cancel-button" id="cancel-edit" type="button" hidden>Cancel</button>
+                    </div>
+                    <p class="status" id="form-status" role="status"></p>
+                </form>
+            </aside>
+        </div>
+    </main>
+
+    <footer>Made by David Lawal</footer>
+
+    <script>
+        const form = document.querySelector('#post-form')
+        const postsElement = document.querySelector('#posts')
+        const postCount = document.querySelector('#post-count')
+        const listStatus = document.querySelector('#list-status')
+        const formStatus = document.querySelector('#form-status')
+        const submitButton = document.querySelector('#submit-button')
+        const cancelEditButton = document.querySelector('#cancel-edit')
+        const composerTitle = document.querySelector('#composer-title')
+        const refreshButton = document.querySelector('#refresh-button')
+        let posts = []
+        let editingPostId = null
+
+        const escapeHtml = (value) => String(value || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;')
+
+        const safeImageUrl = (value) => {
+            try {
+                const url = new URL(value)
+                return ['http:', 'https:'].includes(url.protocol) ? url.href : ''
+            } catch {
+                return ''
+            }
+        }
+
+        const formatDate = (date) => new Intl.DateTimeFormat(undefined, {
+            dateStyle: 'medium'
+        }).format(new Date(date))
+
+        const setComposerMode = (isEditing) => {
+            composerTitle.textContent = isEditing ? 'Edit post' : 'Write a post'
+            submitButton.textContent = isEditing ? 'Save changes' : 'Publish post'
+            cancelEditButton.hidden = !isEditing
+        }
+
+        const cancelEditing = () => {
+            editingPostId = null
+            form.reset()
+            setComposerMode(false)
+            formStatus.className = 'status'
+            formStatus.textContent = ''
+        }
+
+        const startEditing = (post) => {
+            editingPostId = String(post._id)
+            form.elements.title.value = post.title || ''
+            form.elements.author.value = post.author || ''
+            form.elements.category.value = post.category || ''
+            form.elements.image.value = post.image || ''
+            form.elements.tags.value = Array.isArray(post.tags) ? post.tags.join(', ') : ''
+            form.elements.content.value = post.content || ''
+            setComposerMode(true)
+            formStatus.className = 'status'
+            formStatus.textContent = 'Editing this post.'
+            form.elements.title.focus()
+        }
+
+        const renderPosts = (postList) => {
+            postCount.textContent = `${postList.length} ${postList.length === 1 ? 'post' : 'posts'}`
+
+            if (!postList.length) {
+                postsElement.innerHTML = '<div class="empty">No posts yet. Your first entry can start the collection.</div>'
+                return
+            }
+
+            postsElement.innerHTML = postList.map((post) => {
+                const image = safeImageUrl(post.image)
+                const imageMarkup = image
+                    ? `<img class="post-image" src="${escapeHtml(image)}" alt="" loading="lazy">`
+                    : '<div class="post-image" aria-hidden="true"></div>'
+                const tags = Array.isArray(post.tags) ? post.tags : []
+                const tagsMarkup = tags.length
+                    ? `<div class="tags">${tags.map((tag) => `<span class="tag">#${escapeHtml(tag)}</span>`).join('')}</div>`
+                    : ''
+
+                return `<article class="post-card">
+                    ${imageMarkup}
+                    <div class="post-content">
+                        <div class="post-meta">
+                            <span class="category">${escapeHtml(post.category || 'Journal')}</span>
+                            <span>By ${escapeHtml(post.author)}</span>
+                            <span>${formatDate(post.createdAt)}</span>
+                        </div>
+                        <h3>${escapeHtml(post.title)}</h3>
+                        <p>${escapeHtml(post.content).replace(/\n/g, '<br>')}</p>
+                        ${tagsMarkup}
+                        <div class="post-actions">
+                            <button class="edit-button" type="button" data-action="edit" data-id="${escapeHtml(post._id)}" aria-label="Edit ${escapeHtml(post.title)}">Edit</button>
+                            <button class="delete-button" type="button" data-action="delete" data-id="${escapeHtml(post._id)}" aria-label="Delete ${escapeHtml(post.title)}">Delete</button>
+                        </div>
+                    </div>
+                </article>`
+            }).join('')
+        }
+
+        const loadPosts = async () => {
+            listStatus.className = 'status'
+            listStatus.textContent = 'Loading posts...'
+
+            try {
+                const response = await fetch('/api/blog')
+                const data = await response.json()
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Could not load posts')
+                }
+
+                posts = data
+                renderPosts(data)
+                listStatus.textContent = ''
+            } catch (error) {
+                postCount.textContent = 'Unavailable'
+                listStatus.className = 'status error'
+                listStatus.textContent = error.message
+                postsElement.innerHTML = '<div class="empty">The posts could not be loaded. Check that the server and database are running.</div>'
+            }
+        }
+
+        postsElement.addEventListener('click', (event) => {
+            const button = event.target.closest('button[data-action]')
+            if (!button) {
+                return
+            }
+
+            const post = posts.find((item) => String(item._id) === button.dataset.id)
+            if (!post) {
+                return
+            }
+
+            if (button.dataset.action === 'edit') {
+                startEditing(post)
+            } else if (button.dataset.action === 'delete') {
+                deletePost(post)
+            }
+        })
+
+        const deletePost = async (post) => {
+            if (!window.confirm(`Delete "${post.title}"?`)) {
+                return
+            }
+
+            listStatus.className = 'status'
+            listStatus.textContent = 'Deleting post...'
+
+            try {
+                const response = await fetch(`/api/blog/${encodeURIComponent(post._id)}`, {
+                    method: 'DELETE'
+                })
+                const data = await response.json()
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Could not delete post')
+                }
+
+                if (editingPostId === String(post._id)) {
+                    cancelEditing()
+                }
+
+                await loadPosts()
+                listStatus.textContent = 'Post deleted.'
+            } catch (error) {
+                listStatus.className = 'status error'
+                listStatus.textContent = error.message
+            }
+        }
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault()
+            submitButton.disabled = true
+            formStatus.className = 'status'
+            const isEditing = Boolean(editingPostId)
+            formStatus.textContent = isEditing ? 'Saving changes...' : 'Publishing...'
+
+            const formData = new FormData(form)
+            const tags = String(formData.get('tags') || '')
+                .split(',')
+                .map((tag) => tag.trim())
+                .filter(Boolean)
+
+            const payload = {
+                title: String(formData.get('title') || '').trim(),
+                author: String(formData.get('author') || '').trim(),
+                content: String(formData.get('content') || '').trim(),
+                category: String(formData.get('category') || '').trim(),
+                image: String(formData.get('image') || '').trim(),
+                tags
+            }
+
+            const url = isEditing ? `/api/blog/${encodeURIComponent(editingPostId)}` : '/api/blog'
+            const method = isEditing ? 'PATCH' : 'POST'
+
+            try {
+                const response = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                })
+                const data = await response.json()
+
+                if (!response.ok) {
+                    throw new Error(data.error || (isEditing ? 'Could not save changes' : 'Could not publish post'))
+                }
+
+                form.reset()
+                editingPostId = null
+                setComposerMode(false)
+                formStatus.textContent = isEditing ? 'Changes saved.' : 'Post published.'
+                await loadPosts()
+            } catch (error) {
+                formStatus.className = 'status error'
+                formStatus.textContent = error.message
+            } finally {
+                submitButton.disabled = false
+            }
+        })
+
+        cancelEditButton.addEventListener('click', cancelEditing)
+        refreshButton.addEventListener('click', loadPosts)
+        loadPosts()
+    </script>
+</body>
+
+</html>

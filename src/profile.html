@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body>
+    <nav class="nav">
+        <a href="/" class="brand">Express Auth Demo</a>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/admin" data-auth="admin">Admin</a>
+            <a href="/profile" data-auth="in">Profile</a>
+            <a href="/login" data-auth="out">Login</a>
+            <button type="button" data-auth="in" data-logout>Logout</button>
+        </div>
+    </nav>
+
+    <main>
+        <div class="card">
+            <p id="state" class="state">Loading your profile...</p>
+
+            <div id="profile" class="hidden">
+                <div class="profile-header">
+                    <div class="avatar" id="avatar"></div>
+                    <div>
+                        <h1 id="name"></h1>
+                        <p class="subtitle" id="email" style="margin: 0;"></p>
+                        <span class="badge" id="role"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <span class="key">User ID</span>
+                    <span class="value" id="userId"></span>
+                </div>
+                <div class="row">
+                    <span class="key">Member since</span>
+                    <span class="value" id="createdAt"></span>
+                </div>
+                <div class="row">
+                    <span class="key">Last updated</span>
+                    <span class="value" id="updatedAt"></span>
+                </div>
+
+                <div class="actions">
+                    <button type="button" class="btn secondary" id="refreshBtn">Refresh</button>
+                    <button type="button" class="btn danger" data-logout>Logout</button>
+                </div>
+
+                <div class="actions" data-auth="admin">
+                    <a class="btn secondary" href="/admin"
+                        style="text-align: center; text-decoration: none;">Open admin panel</a>
+                </div>
+
+                <p class="hint">
+                    <button type="button" class="link-btn" id="deleteBtn">Delete account</button>
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <script src="/js/auth.js"></script>
+    <script src="/js/profile.js"></script>
+</body>
+
+</html>

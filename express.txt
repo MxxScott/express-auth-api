@@ -1,0 +1,47 @@
+Express is a web framework for nodejs application -- it gives the tools to run node.js
+to create api and servers
+
+- create servers
+- create api
+- handle different urls and routes
+
+A port is a virtual address that lets your computer's route handle a specific data traffic
+
+__Requests__
+
+    Query params - These are extra pieces of info you attach to a url. To use it, we use question mark(?)
+
+        res.send(req.query) - to respond to a query sent by the front end
+
+    Route Params - Dynamic values that are in our url path (e.g user/id)
+
+        req.params
+
+    Body - when creating a body req.body is important - It is the data clients sent to your server
+
+Middleware
+Middleware is the middle man between your requests and your response. It is the heart of express.  
+
+__Types of Middleware__
+1. Inbuilt middleware: express.json() --> (previously known as body parser) - it is necessary for use of req.body - to call we use app.use() 
+        - checks the requests coming in from the frontend if it has a Content-Type:application/json
+    - CORS: Cross origin resource sharing: it is a security feature used by web browsers to control how resources can be requested. 
+        Types
+        - Access control allow origin: defines who can access the source using ports
+        - Access control allow method: defines who can access the source using the http method
+        - Access control allow headers
+        - Access control allow credentials
+2. Custom middleware: This is a function we make to run our route
+    - comes with 3 parameters (req, res, next())
+    - used for:
+     logging request
+     check authentication
+     validate data
+     modify req/res
+     error handling
+
+
+Read on:
+responses and requests (res and req)
+async await
+status code
