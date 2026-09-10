@@ -34,10 +34,11 @@ app.use( '/api/blog', blogRoute)
 
 
 const apiPath = path.join(__dirname, 'api', 'data')
-if (createDataFile('api.json', apiPath)) {
+const apiFileCreated = createDataFile('api.json', apiPath)
+if (apiFileCreated) {
   console.log(`API file Generated Successfully at ${apiPath}`)
 } else {
-  console.log('API file Generation Failed')
+  console.log(`API file already exists at ${apiPath}`)
 }
 
 

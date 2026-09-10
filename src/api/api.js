@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 
 const data = {
     "users": [
@@ -15,10 +16,15 @@ const data = {
     ]
 }
 
-function createDataFile(name, dir = '/api/data', path = `${dir}/${name}`) {
+function createDataFile(name, dir = '/api/data', filePath = path.join(dir, name)) {
     fs.mkdirSync(dir, { recursive: true });
-    fs.writeFileSync(path, JSON.stringify(data, null, 2))
-    return 1;
+
+    if (fs.existsSync(filePath)) {
+        return false;
+    }
+
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+    return true;
 }
 
 module.exports = createDataFile;
