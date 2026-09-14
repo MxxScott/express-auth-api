@@ -247,6 +247,8 @@ button { font-family: inherit; }
 .data-output { margin-top: 16px; padding: 16px; overflow: auto; color: var(--lime); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; font: .75rem/1.6 'DM Mono', monospace; }
 .hidden { display: none !important; }
 .hint a, .link-btn { color: var(--lime); }
+.form-link { margin: 14px 0 0; color: var(--muted); font-size: .78rem; text-align: center; }
+.form-link .link-btn { color: var(--lime); }
 
 .stats { display: flex; gap: 10px; margin: 26px 0; }
 .stat { flex: 1; padding: 16px; background: var(--bg); border: 1px solid var(--line); border-radius: 12px; }

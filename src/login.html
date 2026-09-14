@@ -40,6 +40,7 @@
                     autocomplete="current-password" required>
 
                 <button type="submit" class="btn">Login</button>
+                <p class="form-link"><button type="button" class="link-btn" id="forgotPasswordLink">Forgot your password?</button></p>
             </form>
 
             <form id="registerForm" class="hidden" novalidate>
@@ -55,6 +56,34 @@
                     autocomplete="new-password" minlength="6" required>
 
                 <button type="submit" class="btn">Create account</button>
+            </form>
+
+            <form id="forgotForm" class="hidden" novalidate>
+                <h2>Reset your password</h2>
+                <p class="subtitle">Enter your email and we’ll send a secure reset link if an account exists.</p>
+
+                <label for="forgotEmail">Email</label>
+                <input type="email" id="forgotEmail" name="email" placeholder="you@example.com"
+                    autocomplete="email" required>
+
+                <button type="submit" class="btn">Send reset link</button>
+                <p class="form-link"><button type="button" class="link-btn" id="backToLoginLink">Back to login</button></p>
+            </form>
+
+            <form id="resetForm" class="hidden" novalidate>
+                <h2>Choose a new password</h2>
+                <p class="subtitle">Use a password you haven’t used elsewhere.</p>
+
+                <label for="newPassword">New password</label>
+                <input type="password" id="newPassword" name="newPassword" placeholder="At least 6 characters"
+                    autocomplete="new-password" minlength="6" required>
+
+                <label for="confirmPassword">Confirm password</label>
+                <input type="password" id="confirmPassword" name="confirmPassword"
+                    placeholder="Repeat your new password" autocomplete="new-password" minlength="6" required>
+
+                <button type="submit" class="btn">Update password</button>
+                <p class="form-link"><a href="/login">Back to login</a></p>
             </form>
         </div>
     </main>
