@@ -15,6 +15,16 @@ const publicUser = (user) => ({
 // Emails are compared case-insensitively, so store them normalized
 const normalizeEmail = (email) => String(email || '').trim().toLowerCase()
 
+const validatePassword = (password) => {
+    if (!password) {
+        return 'Password is required'
+    }
+    if (String(password).length < MIN_PASSWORD) {
+        return `Password must be at least ${MIN_PASSWORD} characters`
+    }
+    return null
+}
+
 // Returns an error string when the payload is unusable, otherwise null
 const validateCredentials = ({ name, email, password }, { requireName = true } = {}) => {
     if (requireName && !String(name || '').trim()) {
@@ -23,13 +33,7 @@ const validateCredentials = ({ name, email, password }, { requireName = true } =
     if (!normalizeEmail(email)) {
         return 'Email is required'
     }
-    if (!password) {
-        return 'Password is required'
-    }
-    if (String(password).length < MIN_PASSWORD) {
-        return `Password must be at least ${MIN_PASSWORD} characters`
-    }
-    return null
+    return validatePassword(password)
 }
 
 // Turn thrown errors into the right status code without leaking internals
@@ -47,4 +51,11 @@ const handleError = (res, error, action) => {
     return res.status(500).json({ message: 'Server error' })
 }
 
-module.exports = { MIN_PASSWORD, publicUser, normalizeEmail, validateCredentials, handleError }
+module.exports = {
+    MIN_PASSWORD,
+    publicUser,
+    normalizeEmail,
+    validatePassword,
+    validateCredentials,
+    handleError
+}

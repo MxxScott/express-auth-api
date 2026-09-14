@@ -169,6 +169,22 @@ The `/blog` page is linked from the signed-in navigation. Write actions send the
 current JWT in the `Authorization: Bearer <token>` header; users must be signed in
 to publish, edit, or delete journal entries.
 
+### Password reset emails
+
+Password recovery uses the public `POST /forgot-password` and
+`POST /reset-password` endpoints. Reset emails are rendered from
+`src/resetPasswordEmail.html` through the shared `src/utils/renderMail.js`
+helper. Set `APP_URL` to the browser-facing application URL so generated links
+point to the correct environment:
+
+```env
+APP_URL=http://localhost:8080
+```
+
+Reset emails link to `/login?token=...`, which is the canonical recovery URL.
+The home page also accepts the same token as an additional entry point:
+`/?token=...`. Both pages submit the token to `POST /reset-password`.
+
 ### Status codes
 
 | Code | Meaning |
